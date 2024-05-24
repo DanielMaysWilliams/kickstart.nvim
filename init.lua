@@ -154,6 +154,9 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+-- Custon for Daniel
+vim.opt.wrap = false
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -570,6 +573,8 @@ require('lazy').setup({
         pyright = {},
         ruff_lsp = {},
         rust_analyzer = {},
+        jinja_lsp = {},
+        djlint = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -811,7 +816,17 @@ require('lazy').setup({
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
+      require('mini.surround').setup {
+        mappings = {
+          add = '<leader>sa', -- Add surrounding in Normal and Visual modes
+          delete = '<leader>sd', -- Delete surrounding
+          find = '<leader>sf', -- Find surrounding (to the right)
+          find_left = '<leader>sF', -- Find surrounding (to the left)
+          highlight = '<leader>sh', -- Highlight surrounding
+          replace = '<leader>sr', -- Replace surrounding
+          update_n_lines = '<leader>sn', -- Update `n_lines`
+        },
+      }
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
@@ -877,8 +892,8 @@ require('lazy').setup({
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
+  require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
@@ -886,7 +901,7 @@ require('lazy').setup({
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
@@ -908,6 +923,65 @@ require('lazy').setup({
     },
   },
 })
+
+local harpoon = require 'harpoon'
+harpoon:setup {}
+
+-- basic telescope configuration
+local conf = require('telescope.config').values
+
+local function toggle_telescope(harpoon_files)
+  local finder = function()
+    local paths = {}
+    for _, item in ipairs(harpoon_files.items) do
+      table.insert(paths, item.value)
+    end
+
+    return require('telescope.finders').new_table {
+      results = paths,
+    }
+  end
+
+  require('telescope.pickers')
+    .new({}, {
+      prompt_title = 'Harpoon',
+      finder = finder(),
+      previewer = conf.file_previewer {},
+      sorter = conf.generic_sorter {},
+      -- layout_config = {
+      --   height = 0.4,
+      --   width = 0.5,
+      --   prompt_position = 'top',
+      --   preview_cutoff = 120,
+      -- },
+      attach_mappings = function(prompt_bufnr, map)
+        map('i', '<C-d>', function()
+          local state = require 'telescope.actions.state'
+          local selected_entry = state.get_selected_entry()
+          local current_picker = state.get_current_picker(prompt_bufnr)
+
+          table.remove(harpoon_files.items, selected_entry.index)
+          current_picker:refresh(finder())
+        end)
+        return true
+      end,
+    })
+    :find()
+end
+
+vim.keymap.set('n', '<leader>a', function()
+  harpoon:list():add()
+end)
+vim.keymap.set('n', '<C-e>', function()
+  toggle_telescope(harpoon:list())
+end, { desc = 'Open harpoon window' })
+-- Toggle previous & next buffers stored within Harpoon list
+vim.keymap.set('n', '<C-S-P>', function()
+  harpoon:list():prev()
+end)
+vim.keymap.set('n', '<C-S-N>', function()
+  harpoon:list():next()
+end)
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
