@@ -735,13 +735,13 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
+          -- ['<C-y>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
-          --['<CR>'] = cmp.mapping.confirm { select = true },
-          --['<Tab>'] = cmp.mapping.select_next_item(),
-          --['<S-Tab>'] = cmp.mapping.select_prev_item(),
+          ['<CR>'] = cmp.mapping.confirm { select = true },
+          ['<Tab>'] = cmp.mapping.select_next_item(),
+          ['<S-Tab>'] = cmp.mapping.select_prev_item(),
 
           -- Manually trigger a completion from nvim-cmp.
           --  Generally you don't need this, because nvim-cmp will display
@@ -818,13 +818,13 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup {
         mappings = {
-          add = '<leader>sa', -- Add surrounding in Normal and Visual modes
-          delete = '<leader>sd', -- Delete surrounding
-          find = '<leader>sf', -- Find surrounding (to the right)
-          find_left = '<leader>sF', -- Find surrounding (to the left)
-          highlight = '<leader>sh', -- Highlight surrounding
-          replace = '<leader>sr', -- Replace surrounding
-          update_n_lines = '<leader>sn', -- Update `n_lines`
+          add = '<leader>ma', -- Add surrounding in Normal and Visual modes
+          delete = '<leader>md', -- Delete surrounding
+          find = '<leader>mf', -- Find surrounding (to the right)
+          find_left = '<leader>mF', -- Find surrounding (to the left)
+          highlight = '<leader>mh', -- Highlight surrounding
+          replace = '<leader>mr', -- Replace surrounding
+          update_n_lines = '<leader>mn', -- Update `n_lines`
         },
       }
 
@@ -975,6 +975,20 @@ end)
 vim.keymap.set('n', '<C-e>', function()
   toggle_telescope(harpoon:list())
 end, { desc = 'Open harpoon window' })
+
+vim.keymap.set('n', '<leader>ha', function()
+  harpoon:list():select(1)
+end)
+vim.keymap.set('n', '<leader>hs', function()
+  harpoon:list():select(2)
+end)
+vim.keymap.set('n', '<leader>hd', function()
+  harpoon:list():select(3)
+end)
+vim.keymap.set('n', '<leader>hf', function()
+  harpoon:list():select(4)
+end)
+
 -- Toggle previous & next buffers stored within Harpoon list
 vim.keymap.set('n', '<C-S-P>', function()
   harpoon:list():prev()
