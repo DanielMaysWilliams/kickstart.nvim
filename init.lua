@@ -156,6 +156,7 @@ vim.opt.scrolloff = 10
 
 -- Custon for Daniel
 vim.opt.wrap = false
+vim.opt.tabstop = 4
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
