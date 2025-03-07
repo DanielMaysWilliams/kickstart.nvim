@@ -158,6 +158,9 @@ vim.opt.scrolloff = 10
 vim.opt.wrap = false
 vim.opt.tabstop = 4
 
+-- Save when I accident type :Wa instead of :wa
+vim.api.nvim_create_user_command('Wa', 'wa', {})
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
