@@ -576,7 +576,7 @@ require('lazy').setup({
         -- clangd = {},
         gopls = {},
         pyright = {},
-        ruff_lsp = {},
+        ruff = {},
         rust_analyzer = {},
         jinja_lsp = {},
         djlint = {},
